@@ -20,7 +20,7 @@ class RGBStrip():
         RPIO.output(BLUE, False)
 	RPIO.PWM.setup()
         for index, colorPin in enumerate(colorPins):
-            RPIO.PWM.init_channel(dmaChannels[index])
+            RPIO.PWM.init_channel(dmaChannels[index], 10000)
             RPIO.PWM.add_channel_pulse(dmaChannels[index], colorPin, 0, 0)
 
 
@@ -40,7 +40,7 @@ class RGBStrip():
             try:
                 color = int(colorString)
                 RPIO.PWM.clear_channel_gpio(dmaChannels[index], colorPins[index])
-                RPIO.PWM.add_channel_pulse(dmaChannels[index], colorPins[index], color, 20)
+                RPIO.PWM.add_channel_pulse(dmaChannels[index], colorPins[index], 0, color)
                 #RPIO.PWM.init_channel(0, 20000+color)
             except ValueError:
                 pass
