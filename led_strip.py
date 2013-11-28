@@ -6,8 +6,9 @@ import RPIO.PWM
 RED = 23
 GREEN = 25
 BLUE = 4
+colorPins = [RED, GREEN, BLUE]
+dmaChannels = [0, 1, 3]
 
-colorNames = [RED, GREEN, BLUE]
 class RGBStrip():
 
     def __init__(self):
@@ -17,16 +18,19 @@ class RGBStrip():
         RPIO.setup(GREEN, RPIO.OUT) 
         RPIO.setup(RED, RPIO.OUT)
         RPIO.output(BLUE, False)
-	RPIO.PWM.setup(100)
-        for i in (0,1,2):
-            RPIO.PWM.init_channel(i)
-            RPIO.PWM.add_channel_pulse(i, colorNames[i], 0, 0)
+	RPIO.PWM.setup()
+        for index, colorPin in enumerate(colorPins):
+            RPIO.PWM.init_channel(dmaChannels[index])
+            RPIO.PWM.add_channel_pulse(dmaChannels[index], colorPin, 0, 0)
 
 
     def setColor(self, r, g, b):
         pass
 
     def __del__(self):
+        for index in enumerate(colorPins):
+            RPIO.PWM.clear_channel(dmaChannels[index])
+        
         RPIO.cleanup()
    
     def socket_callback(self, socket, val):
@@ -35,8 +39,8 @@ class RGBStrip():
         for index, colorString in enumerate(val.split()):
             try:
                 color = int(colorString)
-                RPIO.PWM.clear_channel_gpio(index, colorNames[index])
-                RPIO.PWM.add_channel_pulse(index, colorNames[index], 0, color)
+                RPIO.PWM.clear_channel_gpio(dmaChannels[index], colorPins[index])
+                RPIO.PWM.add_channel_pulse(dmaChannels[index], colorPins[index], color, 20)
                 #RPIO.PWM.init_channel(0, 20000+color)
             except ValueError:
                 pass
